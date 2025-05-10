@@ -1,0 +1,48 @@
+
+
+void Kalman_Predict(float u) {
+    // x = A*x + B*u : //
+    arm_mat_mult_f32(&A, &x, &Ax);  // Ax = A*x
+    arm_mat_scale_f32(&B, u, &Bu);  // Bu = B*u
+    arm_mat_add_f32(&Ax, &Bu, &x);  // x = Ax + Bu
+
+    // P = A*P*A^T + Q : //
+    // At = A ^ T
+    // AP = A * P
+    // APAt = AP * At
+    // P = APAt + Q
+
+}
+
+void Kalman_Update(float y_measure[2]) {
+    // y = y_measure // assign values
+
+    // y_res = y - Cx : //
+    // Cx = C * x
+    // y_res = y - Cx
+
+    // S = C*P*C^T + R : //
+    // Ct = C ^ T
+    // CP = C * P
+    // CPCt = CP * Ct
+    // S = CPCt + R
+    
+    // K = P*C^T * inv(S) : //
+    // PCt = P * Ct
+    // S_inv = inv(S)
+    // K = PCt * S_inv    
+
+    // x = x + K*(y - Cx) : //
+    // Ky_res = K * y_res
+    // x = x + Ky_res
+    
+    // P = (I - K*C)*P : //
+    // KC = K * C
+    // IsKC = I - KC
+    // P = IsKC * P
+}
+
+float* Kalman_GetState() {
+    
+    return x_data;
+}
