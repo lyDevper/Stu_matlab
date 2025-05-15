@@ -13,7 +13,7 @@ void RevKalman_Init(void);
 void RevKalman_Predict(float u);
 void RevKalman_Update(float y[2]);
 float* RevKalman_GetState(void);
-MotorState RevKalman_Step(float volt, float position, float current);
+MotorState RevKalman_Step(float volt, float position, float velocity, float current);
 
 extern MotorState revMotor_state;
 

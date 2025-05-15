@@ -42,7 +42,7 @@ float* PrisKalman_GetState(void);
  * @param current Measured current.
  * @return MotorState Struct containing {position, velocity, load, current}.
  */
-MotorState PrisKalman_Step(float volt, float position, float current);
+MotorState PrisKalman_Step(float volt, float position, float velocity, float current);
 
 /**
  * @brief Latest estimated motor states as struct (position, velocity, load, current).

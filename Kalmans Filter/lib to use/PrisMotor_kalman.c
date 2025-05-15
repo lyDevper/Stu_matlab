@@ -43,27 +43,57 @@ static arm_matrix_instance_f32 IsKC;     // IsKC = I - KC: (N x N)
 // Buffers
 static float x_data[N] = {0};
 static float P_data[N * N] = {0};
+
+// Discrete-time A matrix (with J load)
 static float A_data[N * N] = {
-    1.0f, 9.02071e-5f, -1.0601f, 0.0633f,
-    0.0f, -0.00443f, -1144.76f, 68.04f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, -6.1875e-5f, 0.7307f, 0.94591f
+    1.0f, 9.93638188e-4f, -7.45872398e-3f, 4.46104288e-4f,
+    0.0f, 9.87200596e-1f, -1.48854896e+1f, 8.88731250e-1f,
+    0.0f, -4.55125009e-20f, 1.0f, 1.58239734e-18f,
+    0.0f, -6.84616897e-4f, 5.14811701e-3f, 9.89220985e-1f
 };
-static float B_data[N] = {3.33e-4f, 0.7213f, 0.0f, 0.0111f};
+
+// Discrete-time B matrix (with J load)
+static float B_data[N] = {
+    1.69732221e-6f,
+    5.08207208e-3f,
+    7.47929128e-20f,
+    1.13311954e-2f
+};
+
+// for y_measure = {theta, omega}
+static float C_data[M * N] = {
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f
+};
+
+/*
+// for y_measure = {theta, current}
 static float C_data[M * N] = {
     1.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 0.0f, 0.0f, 1.0f
 };
+*/
+
 static float Q_data[N * N] = {
     0, 0, 0, 0,
     0, 0, 0, 0,
-    0, 0, 1e-10f, 0,
+    0, 0, 1e-7f, 0,
     0, 0, 0, 0
 };
+
+static float R_data[M * M] = {
+    1.32e-6f, 0,
+    0, 4.9e-2f
+};
+
+/*
+ measure theta, current
 static float R_data[M * M] = {
     1.32e-6f, 0,
     0, 1.3e-5f
 };
+*/
+
 static float I_data[N * N] = {
     1.0f, 0, 0, 0,
     0, 	1.0f, 0, 0,
@@ -168,9 +198,10 @@ float* PrisKalman_GetState() {
     return x_data;
 }
 
-MotorState PrisKalman_Step(float volt, float position, float current) {
+MotorState PrisKalman_Step(float volt, float position, float velocity, float current) {
 	PrisKalman_Predict(volt);
-	float y_meas[2] = {position, current};
+	// use velocity instead of current
+	float y_meas[2] = {position, velocity};
 	PrisKalman_Update(y_meas);
 	PrisKalman_GetState();
 

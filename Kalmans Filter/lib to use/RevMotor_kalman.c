@@ -23,18 +23,29 @@ static arm_matrix_instance_f32 Cx, y, y_res, CP, CPCt, S, S_inv, PCt, Ky_res, KC
 static float x_data[N] = {0};
 static float P_data[N * N] = {0};
 
+// including load inertia
 static float A_data[N * N] = {
-    1.0f, 0.0009981f, 0.00000995f, 0.00000471f,
-    0.0f, 0.9963f, 0.01988f, 0.00935f,
+    1.0f, 0.0009995f, -0.00000293f, 0.00000139f,
+    0.0f, 0.9989f, -0.00586f, 0.00275f,
     0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, -0.01896f, -0.0001902f, 0.96195f
+    0.0f, -0.01899f, 0.00005599f, 0.96201f
 };
-static float B_data[N] = {6.2017e-8f, 1.854e-4f, 0.0f, 3.8617e-2f};
 
+static float B_data[N] = {1.825e-8f, 5.4569e-5f, 0.0f, 3.8618e-2f};
+
+// for y_measure = {theta, omega}
+static float C_data[M * N] = {
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f
+};
+
+/*
+// for y_measure = {theta, current}
 static float C_data[M * N] = {
     1.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 0.0f, 0.0f, 1.0f
 };
+*/
 
 static float Q_data[N * N] = {
     0, 0, 0, 0,
@@ -146,9 +157,10 @@ float* RevKalman_GetState() {
     return x_data;
 }
 
-MotorState RevKalman_Step(float volt, float position, float current) {
+MotorState RevKalman_Step(float volt, float position, float velocity, float current) {
     RevKalman_Predict(volt);
-    float y_meas[2] = {position, current};
+    // use velocity instead of current
+    float y_meas[2] = {position, velocity};
     RevKalman_Update(y_meas);
     RevKalman_GetState();
 
